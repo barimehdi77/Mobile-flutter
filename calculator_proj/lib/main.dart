@@ -67,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
 // • Operators : “ + ”, “ - ”, “ * ”, “ / ”.
   @override
   Widget build(BuildContext context) {
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Scaffold(
       appBar: CupertinoNavigationBar(
         middle: Text(widget.title),
@@ -74,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Expanded(
+            flex: 1,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -103,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: const BoxDecoration(
@@ -126,8 +128,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: GridView.builder(
                 itemCount: buttons.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  childAspectRatio: isPortrait ? 1 : 5,
+                ),
                 itemBuilder: (context, index) {
                   if (index == 0 || index == 1) {
                     return MyButton(
@@ -135,6 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       buttonText: buttons[index],
                       color: const Color.fromRGBO(254, 135, 136, 1),
                       onPress: () {
+                        debugPrint(buttons[index]);
                         setState(() {
                           userInput = '0';
                           answer = '0';
@@ -152,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       buttonText: buttons[index],
                       color: const Color.fromRGBO(132, 239, 197, 1),
                       onPress: () {
+                        debugPrint(buttons[index]);
                         setState(() {
                           userInput = '0';
                           answer = '0';
@@ -165,6 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       buttonText: buttons[index],
                       color: Colors.white,
                       onPress: () {
+                        debugPrint(buttons[index]);
                         setState(() {
                           userInput = '0';
                           answer = '0';
@@ -177,6 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       buttonText: buttons[index],
                       color: const Color.fromRGBO(92, 92, 92, 1),
                       onPress: () {
+                        debugPrint(buttons[index]);
                         setState(() {
                           userInput = '0';
                           answer = '0';
