@@ -1,6 +1,7 @@
 import 'package:calculator_proj/my_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     '7',
     '8',
     '9',
-    'X',
+    'x',
     '4',
     '5',
     '6',
@@ -59,12 +60,25 @@ class _MyHomePageState extends State<MyHomePage> {
     '=',
   ];
 
-//   Numbers from 0 to 9.
-// • “ . ” the decimal numbers.
-// • “AC” will reinitialize the expression and result.
-// • “C” will delete the last character of the expression.
-// • “=” will display the result of the expression.
-// • Operators : “ + ”, “ - ”, “ * ”, “ / ”.
+  bool isOperator(String x) {
+    if (x == '/' || x == 'x' || x == '-' || x == '+' || x == '=') {
+      return true;
+    }
+    return false;
+  }
+
+// function to calculate the input operation
+  void equalPressed() {
+    String finaluserinput = userInput;
+    finaluserinput = userInput.replaceAll('x', '*');
+
+    Parser p = Parser();
+    Expression exp = p.parse(finaluserinput);
+    ContextModel cm = ContextModel();
+    double eval = exp.evaluate(EvaluationType.REAL, cm);
+    answer = eval.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
@@ -91,7 +105,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(15),
+                  padding: const EdgeInsets.only(
+                    left: 15,
+                    right: 15,
+                  ),
                   alignment: Alignment.centerRight,
                   child: Text(
                     answer,
@@ -127,22 +144,39 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
               child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: buttons.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 4,
-                  childAspectRatio: isPortrait ? 1 : 5,
+                  childAspectRatio: isPortrait ? 1 : 6,
                 ),
                 itemBuilder: (context, index) {
-                  if (index == 0 || index == 1) {
+                  if (index == 0) {
                     return MyButton(
                       backgroudColor: const Color.fromRGBO(248, 248, 248, 1),
                       buttonText: buttons[index],
                       color: const Color.fromRGBO(254, 135, 136, 1),
                       onPress: () {
-                        debugPrint(buttons[index]);
+                        debugPrint('button pressed :${buttons[index]}');
                         setState(() {
                           userInput = '0';
                           answer = '0';
+                        });
+                      },
+                    );
+                  }
+                  if (index == 1) {
+                    return MyButton(
+                      backgroudColor: const Color.fromRGBO(248, 248, 248, 1),
+                      buttonText: buttons[index],
+                      color: const Color.fromRGBO(254, 135, 136, 1),
+                      onPress: () {
+                        debugPrint('button pressed :${buttons[index]}');
+                        setState(() {
+                          if (userInput != '0') {
+                            userInput =
+                                userInput.substring(0, userInput.length - 1);
+                          }
                         });
                       },
                     );
@@ -157,10 +191,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       buttonText: buttons[index],
                       color: const Color.fromRGBO(132, 239, 197, 1),
                       onPress: () {
-                        debugPrint(buttons[index]);
+                        debugPrint('button pressed :${buttons[index]}');
                         setState(() {
-                          userInput = '0';
-                          answer = '0';
+                          userInput += buttons[index];
                         });
                       },
                     );
@@ -171,10 +204,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       buttonText: buttons[index],
                       color: Colors.white,
                       onPress: () {
-                        debugPrint(buttons[index]);
+                        debugPrint('button pressed :${buttons[index]}');
                         setState(() {
-                          userInput = '0';
-                          answer = '0';
+                          equalPressed();
                         });
                       },
                     );
@@ -184,10 +216,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       buttonText: buttons[index],
                       color: const Color.fromRGBO(92, 92, 92, 1),
                       onPress: () {
-                        debugPrint(buttons[index]);
+                        debugPrint('button pressed :${buttons[index]}');
                         setState(() {
-                          userInput = '0';
-                          answer = '0';
+                          if (userInput == '0') {
+                            userInput = buttons[index];
+                          } else if (userInput.length < 40) {
+                            userInput += buttons[index];
+                          }
                         });
                       },
                     );
