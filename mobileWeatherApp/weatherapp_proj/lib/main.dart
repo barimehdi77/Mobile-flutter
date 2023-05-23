@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,28 +41,96 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-
-  static const List<Widget> _pages = [
-    Text('Currently'),
-    Text('Today'),
-    Text('Weekly')
-  ];
+  String? currentAddress;
+  Position? currentPosition;
+  bool displayGeoLocation = false;
 
   final TextEditingController _searchController = TextEditingController();
 
+  static const List<Widget> pages = [
+    Text(
+      'Currently',
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+      ),
+    ),
+    Text(
+      'Today',
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+      ),
+    ),
+    Text(
+      'Weekly',
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+      ),
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    String? swipeDirection;
+
+    Future<bool> handleLocationPermission() async {
+      bool serviceEnabled;
+      LocationPermission permission;
+
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text(
+                  'Location services are disabled. Please enable the services')));
+        }
+        return false;
+      }
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Location permissions are denied')));
+          }
+          return false;
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Location permissions are permanently denied, we cannot request permissions.'),
+            ),
+          );
+        }
+        return false;
+      }
+      return true;
+    }
+
+    Future<void> getCurrentPosition() async {
+      final hasPermission = await handleLocationPermission();
+      print('hasPermission: $hasPermission');
+      if (!hasPermission) return;
+      await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high)
+          .then((Position position) {
+        setState(() {
+          displayGeoLocation = true;
+          currentPosition = position;
+        });
+      }).catchError((e) {
+        debugPrint(e);
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
-        // flexibleSpace: Container(
-        //   decoration: BoxDecoration(
-        //     gradient: LinearGradient(
-        //       colors: [Colors.deepPurple, Colors.purple.shade300],
-        //       begin: Alignment.topLeft,
-        //       end: Alignment.bottomRight,
-        //     ),
-        //   ),
-        // ),
         title: TextField(
           controller: _searchController,
           style: const TextStyle(color: Colors.white),
@@ -71,8 +140,10 @@ class _MyHomePageState extends State<MyHomePage> {
             hintStyle: TextStyle(color: Colors.white54),
             border: InputBorder.none,
           ),
-          onChanged: (value) {
-            // Perform search functionality here
+          onSubmitted: (value) {
+            setState(() {
+              displayGeoLocation = false;
+            });
           },
         ),
         actions: [
@@ -92,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             child: IconButton(
-              onPressed: () {},
+              onPressed: getCurrentPosition,
               icon: Transform.rotate(
                 angle: 45 * pi / 180,
                 child: const Icon(
@@ -131,8 +202,46 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-      body: Center(
-        child: _pages.elementAt(_selectedIndex),
+      body: SizedBox.expand(
+        child: GestureDetector(
+          onPanUpdate: (details) {
+            swipeDirection = details.delta.dx < 0 ? 'left' : 'right';
+          },
+          onPanEnd: (details) {
+            if (swipeDirection == null) {
+              return;
+            }
+            if (swipeDirection == 'left') {
+              //handle swipe left event
+              setState(() {
+                if (_selectedIndex < 2) _selectedIndex += 1;
+              });
+            }
+            if (swipeDirection == 'right') {
+              //handle swipe right event
+              setState(() {
+                if (_selectedIndex > 0) _selectedIndex -= 1;
+              });
+            }
+          },
+          child: Container(
+            color: Colors.white,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  pages.elementAt(_selectedIndex),
+                  Text(
+                    displayGeoLocation == true
+                        ? '${currentPosition?.latitude ?? ""} / ${currentPosition?.longitude ?? ""}'
+                        : _searchController.text,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
