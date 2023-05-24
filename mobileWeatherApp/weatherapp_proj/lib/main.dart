@@ -32,8 +32,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  String? currentAddress;
-  Position? currentPosition;
+  String? _currentAddress;
+  Position? _currentPosition;
   bool displayGeoLocation = false;
 
   final TextEditingController _searchController = TextEditingController();
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .then((Position position) {
         setState(() {
           displayGeoLocation = true;
-          currentPosition = position;
+          _currentPosition = position;
         });
       }).catchError((e) {
         debugPrint(e);
@@ -235,7 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   pages.elementAt(_selectedIndex),
                   Text(
                     displayGeoLocation == true
-                        ? '${currentPosition?.latitude ?? ""} / ${currentPosition?.longitude ?? ""}'
+                        ? '${_currentPosition?.latitude ?? ""} / ${_currentPosition?.longitude ?? ""}'
                         : _searchController.text,
                   ),
                 ],
