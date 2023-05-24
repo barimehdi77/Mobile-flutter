@@ -82,9 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
               content: Text(
-                  'Location services are disabled. Please enable the services')));
+                'Location services are disabled. Please enable the services',
+              ),
+            ),
+          );
         }
         return false;
       }
@@ -93,8 +97,13 @@ class _MyHomePageState extends State<MyHomePage> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Location permissions are denied')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Location permissions are denied',
+                ),
+              ),
+            );
           }
           return false;
         }
@@ -104,7 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                  'Location permissions are permanently denied, we cannot request permissions.'),
+                'Location permissions are permanently denied, we cannot request permissions.',
+              ),
             ),
           );
         }
@@ -212,13 +222,13 @@ class _MyHomePageState extends State<MyHomePage> {
               return;
             }
             if (swipeDirection == 'left') {
-              //handle swipe left event
+              // handle swipe left event
               setState(() {
                 if (_selectedIndex < 2) _selectedIndex += 1;
               });
             }
             if (swipeDirection == 'right') {
-              //handle swipe right event
+              // handle swipe right event
               setState(() {
                 if (_selectedIndex > 0) _selectedIndex -= 1;
               });
