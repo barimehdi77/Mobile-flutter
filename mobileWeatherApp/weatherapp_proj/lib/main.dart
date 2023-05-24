@@ -32,7 +32,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  String? _currentAddress;
   Position? _currentPosition;
   bool displayGeoLocation = false;
 
@@ -116,7 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Future<void> getCurrentPosition() async {
       final hasPermission = await handleLocationPermission();
-      print('hasPermission: $hasPermission');
       if (!hasPermission) return;
       await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high)
