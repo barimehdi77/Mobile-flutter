@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const CupertinoApp(
+      debugShowCheckedModeBanner: false,
       title: 'Calculator',
       theme: CupertinoThemeData(brightness: Brightness.light),
       home: MyHomePage(
@@ -50,9 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
     '5',
     '6',
     '-',
-    '3',
-    '2',
     '1',
+    '2',
+    '3',
     '+',
     '0',
     '.',
@@ -77,6 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
     ContextModel cm = ContextModel();
     double eval = exp.evaluate(EvaluationType.REAL, cm);
     answer = eval.toString();
+  }
+
+  bool isNumeric(String s) {
+    return double.tryParse(s) != null;
   }
 
   @override
@@ -148,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: buttons.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 4,
-                  childAspectRatio: isPortrait ? 1 : 6,
+                  childAspectRatio: isPortrait ? 1 : 5,
                 ),
                 itemBuilder: (context, index) {
                   if (index == 0) {
@@ -193,7 +198,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPress: () {
                         debugPrint('button pressed :${buttons[index]}');
                         setState(() {
-                          userInput += buttons[index];
+                          if (!isNumeric(userInput[userInput.length - 1])) {
+                            userInput =
+                                userInput.substring(0, userInput.length - 1) +
+                                    buttons[index];
+                          } else {
+                            userInput += buttons[index];
+                          }
                         });
                       },
                     );
