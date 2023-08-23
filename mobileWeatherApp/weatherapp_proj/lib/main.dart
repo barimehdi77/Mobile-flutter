@@ -137,6 +137,10 @@ class _MyHomePageState extends State<MyHomePage> {
             hintText: 'Search location...',
             hintStyle: TextStyle(color: Colors.white54),
             border: InputBorder.none,
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
           ),
           onSubmitted: (value) {
             setState(() {
