@@ -33,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   Position? _currentPosition;
   bool displayGeoLocation = false;
+  bool? isPermissonsAllow;
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -99,13 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       if (permission == LocationPermission.deniedForever) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Location permissions are permanently denied, we cannot request permissions.',
-              ),
-            ),
-          );
+          setState(() {
+            isPermissonsAllow = false;
+          });
         }
         return false;
       }
@@ -114,7 +111,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Future<void> getCurrentPosition() async {
       final hasPermission = await handleLocationPermission();
-      if (!hasPermission) return;
+      if (!hasPermission) {
+        setState(() {
+          isPermissonsAllow = false;
+        });
+      }
       await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high)
           .then((Position position) {
@@ -233,12 +234,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  pages.elementAt(_selectedIndex),
-                  Text(
-                    displayGeoLocation == true
-                        ? '${_currentPosition?.latitude ?? ""} / ${_currentPosition?.longitude ?? ""}'
-                        : _searchController.text,
-                  ),
+                  if (isPermissonsAllow == null)
+                    pages.elementAt(_selectedIndex),
+                  if (isPermissonsAllow == null)
+                    Text(
+                      displayGeoLocation == true
+                          ? '${_currentPosition?.latitude ?? ""} ${_currentPosition?.longitude ?? ""}'
+                          : _searchController.text,
+                    ),
+                  if (isPermissonsAllow == false)
+                    const Text(
+                      "Geolocation is not available, please enable it in your App settings",
+                      style: TextStyle(color: Colors.red, fontSize: 25),
+                      textAlign: TextAlign.center,
+                    ),
                 ],
               ),
             ),

@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:weatherappv2_proj/models/geo_coding_model.dart';
+import 'package:weatherappv2_proj/search_delegate_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,19 +14,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -34,8 +35,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   Position? _currentPosition;
   bool displayGeoLocation = false;
+  bool? isPermissonsAllow;
 
   final TextEditingController _searchController = TextEditingController();
+  GeoCodingModel? geoCodingModel;
 
   static const List<Widget> pages = [
     Text(
@@ -100,13 +103,9 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       if (permission == LocationPermission.deniedForever) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Location permissions are permanently denied, we cannot request permissions.',
-              ),
-            ),
-          );
+          setState(() {
+            isPermissonsAllow = false;
+          });
         }
         return false;
       }
@@ -115,10 +114,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Future<void> getCurrentPosition() async {
       final hasPermission = await handleLocationPermission();
-      if (!hasPermission) return;
+      if (!hasPermission) {
+        setState(() {
+          isPermissonsAllow = false;
+        });
+      }
       await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high)
-          .then((Position position) {
+          .then((Position position) async {
         setState(() {
           displayGeoLocation = true;
           _currentPosition = position;
@@ -136,9 +139,69 @@ class _MyHomePageState extends State<MyHomePage> {
           cursorColor: Colors.white,
           decoration: const InputDecoration(
             hintText: 'Search location...',
-            hintStyle: TextStyle(color: Colors.white54),
+            hintStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+            ),
             border: InputBorder.none,
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
           ),
+          onTap: () {
+            showSearch(
+              context: context,
+              delegate: SearchDelegateWidget(),
+              useRootNavigator: true,
+            );
+          },
+          // onTap: () {
+          //   showModalBottomSheet(
+          //     context: context,
+          //     isScrollControlled: true,
+          //     constraints: BoxConstraints.loose(
+          //       Size(
+          //         MediaQuery.of(context).size.width,
+          //         MediaQuery.of(context).size.height,
+          //       ),
+          //     ),
+          //     builder: (context) {
+          //       return Container(
+          //         height: MediaQuery.of(context).size.height - 118,
+          //         color: Colors.amber,
+          //         child: const Wrap(
+          //           children: [
+          //             ListTile(
+          //               leading: Icon(Icons.share),
+          //               title: Text('Share'),
+          //             ),
+          //             ListTile(
+          //               leading: Icon(Icons.copy),
+          //               title: Text('Copy Link'),
+          //             ),
+          //             ListTile(
+          //               leading: Icon(Icons.edit),
+          //               title: Text('Edit'),
+          //             ),
+          //             ListTile(
+          //               leading: Icon(Icons.edit),
+          //               title: Text('Edit'),
+          //             ),
+          //             ListTile(
+          //               leading: Icon(Icons.edit),
+          //               title: Text('Edit'),
+          //             ),
+          //             ListTile(
+          //               leading: Icon(Icons.edit),
+          //               title: Text('Edit'),
+          //             ),
+          //           ],
+          //         ),
+          //       );
+          //     },
+          //   );
+          // },
           onSubmitted: (value) {
             setState(() {
               displayGeoLocation = false;
@@ -189,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.calendar_view_week,
+              Icons.calendar_month_outlined,
             ),
             label: 'Weekly',
           )
@@ -230,12 +293,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  pages.elementAt(_selectedIndex),
-                  Text(
-                    displayGeoLocation == true
-                        ? '${_currentPosition?.latitude ?? ""} / ${_currentPosition?.longitude ?? ""}'
-                        : _searchController.text,
-                  ),
+                  if (isPermissonsAllow == null)
+                    pages.elementAt(_selectedIndex),
+                  if (isPermissonsAllow == null)
+                    Text(
+                      displayGeoLocation == true
+                          ? '${_currentPosition?.latitude ?? ""} ${_currentPosition?.longitude ?? ""}'
+                          : _searchController.text,
+                    ),
+                  if (isPermissonsAllow == false)
+                    const Text(
+                      "Geolocation is not available, please enable it in your App settings",
+                      style: TextStyle(color: Colors.red, fontSize: 25),
+                      textAlign: TextAlign.center,
+                    ),
                 ],
               ),
             ),
