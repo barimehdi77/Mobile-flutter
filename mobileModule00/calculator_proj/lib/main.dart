@@ -34,8 +34,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var userInput = '0';
-  var answer = '0';
+  String userInput = '0';
+  String answer = '0';
+  bool isDouble = false;
 
   // Array of button
   final List<String> buttons = [
@@ -164,6 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPress: () {
                         debugPrint('button pressed :${buttons[index]}');
                         setState(() {
+                          isDouble = false;
                           userInput = '0';
                           answer = '0';
                         });
@@ -179,6 +181,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         debugPrint('button pressed :${buttons[index]}');
                         setState(() {
                           if (userInput != '0') {
+                            if (userInput[userInput.length - 1] == '.') {
+                              isDouble = false;
+                            }
                             userInput =
                                 userInput.substring(0, userInput.length - 1);
                           }
@@ -203,6 +208,23 @@ class _MyHomePageState extends State<MyHomePage> {
                                 userInput.substring(0, userInput.length - 1) +
                                     buttons[index];
                           } else {
+                            isDouble = false;
+                            userInput += buttons[index];
+                          }
+                        });
+                      },
+                    );
+                  }
+                  if (index == 17) {
+                    return MyButton(
+                      backgroudColor: const Color.fromRGBO(248, 248, 248, 1),
+                      buttonText: buttons[index],
+                      color: const Color.fromRGBO(92, 92, 92, 1),
+                      onPress: () {
+                        debugPrint('button pressed :${buttons[index]}');
+                        setState(() {
+                          if (!isDouble) {
+                            isDouble = true;
                             userInput += buttons[index];
                           }
                         });
