@@ -1,9 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weatherappv2_proj/models/geo_coding_model.dart';
-import 'package:weatherappv2_proj/search_delegate_widget.dart';
+import 'package:weatherappv2_proj/screens/current_weather_screen.dart';
+import 'package:weatherappv2_proj/screens/today_weather_screen.dart';
+import 'package:weatherappv2_proj/screens/weekly_weather_screen.dart';
+import 'package:weatherappv2_proj/widgets/search_delegate_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,102 +38,134 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   Position? _currentPosition;
-  bool displayGeoLocation = false;
+  bool _displayGeoLocation = false;
   bool? isPermissonsAllow;
 
   final TextEditingController _searchController = TextEditingController();
-  GeoCodingModel? geoCodingModel;
-
-  static const List<Widget> pages = [
-    Text(
-      'Currently',
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
-      ),
-    ),
-    Text(
-      'Today',
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
-      ),
-    ),
-    Text(
-      'Weekly',
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
-      ),
-    ),
-  ];
+  GeoCodingModel? _geoCodingModel;
 
   @override
-  Widget build(BuildContext context) {
-    String? swipeDirection;
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCurrentPosition();
+    });
+  }
 
-    Future<bool> handleLocationPermission() async {
-      bool serviceEnabled;
-      LocationPermission permission;
+  Future<bool> handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Location services are disabled. Please enable the services',
+            ),
+          ),
+        );
+      }
+      return false;
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                'Location services are disabled. Please enable the services',
+                'Location permissions are denied',
               ),
             ),
           );
         }
         return false;
       }
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Location permissions are denied',
-                ),
-              ),
-            );
-          }
-          return false;
-        }
-      }
-      if (permission == LocationPermission.deniedForever) {
-        if (context.mounted) {
-          setState(() {
-            isPermissonsAllow = false;
-          });
-        }
-        return false;
-      }
-      return true;
     }
-
-    Future<void> getCurrentPosition() async {
-      final hasPermission = await handleLocationPermission();
-      if (!hasPermission) {
+    if (permission == LocationPermission.deniedForever) {
+      if (context.mounted) {
         setState(() {
           isPermissonsAllow = false;
         });
       }
-      await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.high)
-          .then((Position position) async {
-        setState(() {
-          displayGeoLocation = true;
-          _currentPosition = position;
-        });
-      }).catchError((e) {
-        debugPrint(e);
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> getCurrentPosition() async {
+    FocusScope.of(context).unfocus();
+    _searchController.clear();
+
+    final hasPermission = await handleLocationPermission();
+    if (!hasPermission) {
+      setState(() {
+        isPermissonsAllow = false;
       });
     }
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) async {
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        setState(() {
+          // _displayGeoLocation = true;
+          // _currentPosition = position;
+          _geoCodingModel = null;
+          _geoCodingModel = GeoCodingModel(
+            country: placemarks[0].country ?? "",
+            countryCode: placemarks[0].isoCountryCode ?? "",
+            elevation: 0,
+            id: 0,
+            latitude: position.latitude,
+            longitude: position.longitude,
+            name: placemarks[0].locality ?? "",
+            timezone: "",
+            admin1: placemarks[0].subAdministrativeArea ?? "",
+          );
+        });
+      } catch (e) {
+        print(e);
+      }
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> pages = [
+      CurrentWeatherScreen(
+        selectedCity: _geoCodingModel,
+        isPermissonsAllow: isPermissonsAllow == null,
+        displayGeoLocation: _displayGeoLocation,
+        latitude: _currentPosition == null ? null : _currentPosition!.latitude,
+        longitude:
+            _currentPosition == null ? null : _currentPosition!.longitude,
+      ),
+      TodayWeatherScreen(
+        selectedCity: _geoCodingModel,
+        isPermissonsAllow: isPermissonsAllow == null,
+        displayGeoLocation: _displayGeoLocation,
+        latitude: _currentPosition == null ? null : _currentPosition!.latitude,
+        longitude:
+            _currentPosition == null ? null : _currentPosition!.longitude,
+      ),
+      WeeklyWeatherScreen(
+        selectedCity: _geoCodingModel,
+        isPermissonsAllow: isPermissonsAllow == null,
+        displayGeoLocation: _displayGeoLocation,
+        latitude: _currentPosition == null ? null : _currentPosition!.latitude,
+        longitude:
+            _currentPosition == null ? null : _currentPosition!.longitude,
+      ),
+    ];
+    String? swipeDirection;
 
     return Scaffold(
       appBar: AppBar(
@@ -150,6 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
             border: InputBorder.none,
           ),
           onTap: () async {
+            FocusScope.of(context).unfocus();
             final selectedCity = await showSearch<GeoCodingModel?>(
               context: context,
               delegate: SearchDelegateWidget(),
@@ -161,57 +198,15 @@ class _MyHomePageState extends State<MyHomePage> {
             } else {
               _searchController.text = "";
             }
-            print(selectedCity?.name);
+            setState(() {
+              _displayGeoLocation = false;
+              isPermissonsAllow = null;
+              _geoCodingModel = selectedCity;
+            });
           },
-          // onTap: () {
-          //   showModalBottomSheet(
-          //     context: context,
-          //     isScrollControlled: true,
-          //     constraints: BoxConstraints.loose(
-          //       Size(
-          //         MediaQuery.of(context).size.width,
-          //         MediaQuery.of(context).size.height,
-          //       ),
-          //     ),
-          //     builder: (context) {
-          //       return Container(
-          //         height: MediaQuery.of(context).size.height - 118,
-          //         color: Colors.amber,
-          //         child: const Wrap(
-          //           children: [
-          //             ListTile(
-          //               leading: Icon(Icons.share),
-          //               title: Text('Share'),
-          //             ),
-          //             ListTile(
-          //               leading: Icon(Icons.copy),
-          //               title: Text('Copy Link'),
-          //             ),
-          //             ListTile(
-          //               leading: Icon(Icons.edit),
-          //               title: Text('Edit'),
-          //             ),
-          //             ListTile(
-          //               leading: Icon(Icons.edit),
-          //               title: Text('Edit'),
-          //             ),
-          //             ListTile(
-          //               leading: Icon(Icons.edit),
-          //               title: Text('Edit'),
-          //             ),
-          //             ListTile(
-          //               leading: Icon(Icons.edit),
-          //               title: Text('Edit'),
-          //             ),
-          //           ],
-          //         ),
-          //       );
-          //     },
-          //   );
-          // },
           onSubmitted: (value) {
             setState(() {
-              displayGeoLocation = false;
+              _displayGeoLocation = false;
             });
           },
         ),
@@ -296,26 +291,13 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Container(
             color: Colors.white,
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (isPermissonsAllow == null)
-                    pages.elementAt(_selectedIndex),
-                  if (isPermissonsAllow == null)
-                    Text(
-                      displayGeoLocation == true
-                          ? '${_currentPosition?.latitude ?? ""} ${_currentPosition?.longitude ?? ""}'
-                          : _searchController.text,
-                    ),
-                  if (isPermissonsAllow == false)
-                    const Text(
+              child: isPermissonsAllow == false
+                  ? const Text(
                       "Geolocation is not available, please enable it in your App settings",
                       style: TextStyle(color: Colors.red, fontSize: 25),
                       textAlign: TextAlign.center,
-                    ),
-                ],
-              ),
+                    )
+                  : pages.elementAt(_selectedIndex),
             ),
           ),
         ),

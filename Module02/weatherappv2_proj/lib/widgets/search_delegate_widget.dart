@@ -10,11 +10,7 @@ class SearchDelegateWidget extends SearchDelegate<GeoCodingModel?> {
     final dio = Dio();
     final response = await dio.get<Map>(url);
     if (response.data == null) return [];
-    print('response: ');
-    print(response);
-    print(response.data!.containsKey('results'));
     if (response.data!.containsKey('results')) {
-      print("passing data to fromJsonList");
       return GeoCodingModel.fromJsonList(response.data!['results']);
     } else {
       return [];
