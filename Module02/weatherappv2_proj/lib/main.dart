@@ -114,8 +114,6 @@ class _MyHomePageState extends State<MyHomePage> {
           position.longitude,
         );
         setState(() {
-          // _displayGeoLocation = true;
-          // _currentPosition = position;
           _geoCodingModel = null;
           _geoCodingModel = GeoCodingModel(
             country: placemarks[0].country ?? "",
@@ -176,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: TextField(
           controller: _searchController,
           style: const TextStyle(color: Colors.white),
+          enableInteractiveSelection: false,
           cursorColor: Colors.white,
           decoration: const InputDecoration(
             hintText: 'Search location...',
@@ -187,6 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           onTap: () async {
             FocusScope.of(context).unfocus();
+            FocusScope.of(context).requestFocus(FocusNode());
             final selectedCity = await showSearch<GeoCodingModel?>(
               context: context,
               delegate: SearchDelegateWidget(),
@@ -196,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
             if (selectedCity != null) {
               _searchController.text = selectedCity.name;
             } else {
-              _searchController.text = "";
+              getCurrentPosition();
             }
             setState(() {
               _displayGeoLocation = false;
@@ -276,7 +276,6 @@ class _MyHomePageState extends State<MyHomePage> {
               return;
             }
             if (swipeDirection == 'left') {
-              // handle swipe left event
               setState(() {
                 if (_selectedIndex < 2) _selectedIndex += 1;
               });
