@@ -2,28 +2,19 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:weatherappv2_proj/models/geo_coding_model.dart';
 
-class SearchDelegateWidget extends SearchDelegate {
-  // List<String> searchTerms = [
-  //   'Apple',
-  //   'Banana',
-  //   "Pear",
-  //   "Watermelons",
-  //   "Oranges",
-  //   "Blueberries",
-  //   "Strawberries",
-  //   "Raspberries",
-  // ];
-
+class SearchDelegateWidget extends SearchDelegate<GeoCodingModel?> {
   Future<List<GeoCodingModel>> serachdb(searchData) async {
     print('hellp');
     var url =
         'https://geocoding-api.open-meteo.com/v1/search?name=$searchData&count=100&language=en&format=json';
     final dio = Dio();
     final response = await dio.get<Map>(url);
+    if (response.data == null) return [];
     print('response: ');
     print(response);
     print(response.data!.containsKey('results'));
     if (response.data!.containsKey('results')) {
+      print("passing data to fromJsonList");
       return GeoCodingModel.fromJsonList(response.data!['results']);
     } else {
       return [];
@@ -58,20 +49,41 @@ class SearchDelegateWidget extends SearchDelegate {
       future: serachdb(query),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return snapshot.data!.isEmpty
-              ? const Center(child: Text("City Not found "))
-              : ListView.builder(
-                  itemBuilder: (context, index) {
-                    var result = Text(snapshot.data![index].name);
-                    return GestureDetector(
-                      child: ListTile(title: result),
-                      onTap: () {
-                        close(context, snapshot.data![index]);
+          return snapshot.data == null
+              ? const Text('No Data')
+              : snapshot.data!.isEmpty
+                  ? const Center(child: Text("City Not found "))
+                  : ListView.builder(
+                      itemBuilder: (context, index) {
+                        GeoCodingModel result = snapshot.data![index];
+                        return GestureDetector(
+                          child: ListTile(
+                            leading: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  result.id.toString(),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                            title: Text(
+                              result.name,
+                            ),
+                            subtitle: Text(
+                              result.admin1,
+                            ),
+                            trailing: Text(
+                              result.country,
+                            ),
+                          ),
+                          onTap: () {
+                            close(context, snapshot.data![index]);
+                          },
+                        );
                       },
+                      itemCount: snapshot.data!.length,
                     );
-                  },
-                  itemCount: snapshot.data!.length,
-                );
         } else {
           return const CircularProgressIndicator();
         }
@@ -85,22 +97,41 @@ class SearchDelegateWidget extends SearchDelegate {
       future: serachdb(query),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data != null) {
-            return snapshot.data!.isEmpty
-                ? const Center(child: Text("City Not found "))
-                : ListView.builder(
-                    itemBuilder: (context, index) {
-                      var result = Text(snapshot.data![index].name);
-                      return GestureDetector(
-                        child: ListTile(title: result),
-                        onTap: () {
-                          close(context, snapshot.data![index]);
-                        },
-                      );
-                    },
-                    itemCount: snapshot.data!.length,
-                  );
-          }
+          return snapshot.data == null
+              ? const Text('No Data')
+              : snapshot.data!.isEmpty
+                  ? const Center(child: Text("City Not found "))
+                  : ListView.builder(
+                      itemBuilder: (context, index) {
+                        GeoCodingModel result = snapshot.data![index];
+                        return GestureDetector(
+                          child: ListTile(
+                            leading: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  result.id.toString(),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                            title: Text(
+                              result.name,
+                            ),
+                            subtitle: Text(
+                              result.admin1,
+                            ),
+                            trailing: Text(
+                              result.country,
+                            ),
+                          ),
+                          onTap: () {
+                            close(context, snapshot.data![index]);
+                          },
+                        );
+                      },
+                      itemCount: snapshot.data!.length,
+                    );
         } else {
           return const CircularProgressIndicator();
         }

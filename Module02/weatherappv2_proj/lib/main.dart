@@ -133,6 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const Icon(
+          Icons.search,
+          color: Colors.white,
+        ),
         title: TextField(
           controller: _searchController,
           style: const TextStyle(color: Colors.white),
@@ -144,17 +148,20 @@ class _MyHomePageState extends State<MyHomePage> {
               fontSize: 15,
             ),
             border: InputBorder.none,
-            prefixIcon: Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
           ),
-          onTap: () {
-            showSearch(
+          onTap: () async {
+            final selectedCity = await showSearch<GeoCodingModel?>(
               context: context,
               delegate: SearchDelegateWidget(),
               useRootNavigator: true,
+              query: _searchController.text,
             );
+            if (selectedCity != null) {
+              _searchController.text = selectedCity.name;
+            } else {
+              _searchController.text = "";
+            }
+            print(selectedCity?.name);
           },
           // onTap: () {
           //   showModalBottomSheet(
