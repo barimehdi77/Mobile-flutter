@@ -36,7 +36,6 @@ class HourlyWeatherModel {
         windspeed: jsonHours['windspeed_10m'][i],
       ));
     }
-    print(hours);
     return hours;
   }
 }

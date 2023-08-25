@@ -26,7 +26,6 @@ class CurrentWeatherScreen extends StatefulWidget {
 
 class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
   Future<WeatherModel?> getCurrentWeather() async {
-    print('hellp');
     var url =
         'https://api.open-meteo.com/v1/forecast?latitude=${widget.selectedCity!.latitude}&longitude=${widget.selectedCity!.longitude}&current_weather=true&timezone=auto';
     final dio = Dio();

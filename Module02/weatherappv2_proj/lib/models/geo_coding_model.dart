@@ -36,12 +36,8 @@ class GeoCodingModel {
   }
 
   static List<GeoCodingModel> fromJsonList(List list) {
-    print("list passed to fromJsonList");
-    print(list);
     List<GeoCodingModel> convertList =
         list.map((item) => GeoCodingModel.fromJson(item)).toList();
-    print("after converting list");
-    print(convertList);
 
     return convertList;
   }

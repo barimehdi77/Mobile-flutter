@@ -38,7 +38,6 @@ class DailyWeatherModel {
         windspeed: jsonDays['windspeed_10m_max'][i],
       ));
     }
-    print(days);
     return days;
   }
 }
