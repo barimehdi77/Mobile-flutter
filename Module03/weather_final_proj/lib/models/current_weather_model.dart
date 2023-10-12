@@ -90,27 +90,27 @@ class CurrentWeatherModel {
       case 61:
         return WeaderDecoder(
           name: "Slight rain",
-          icon: "assets/lotties/sloghtRain.json",
+          icon: "assets/lotties/slightRain.json",
         );
       case 63:
         return WeaderDecoder(
           name: "Moderate rain",
-          icon: "assets/lotties/sloghtRain.json",
+          icon: "assets/lotties/slightRain.json",
         );
       case 65:
         return WeaderDecoder(
           name: "Heavy intensity rain",
-          icon: "assets/lotties/sloghtRain.json",
+          icon: "assets/lotties/slightRain.json",
         );
       case 66:
         return WeaderDecoder(
           name: "Light freezing rain",
-          icon: "assets/lotties/sloghtRain.json",
+          icon: "assets/lotties/slightRain.json",
         );
       case 67:
         return WeaderDecoder(
           name: "Heavy intensity freezing rain",
-          icon: "assets/lotties/sloghtRain.json",
+          icon: "assets/lotties/slightRain.json",
         );
       case 71:
         return WeaderDecoder(

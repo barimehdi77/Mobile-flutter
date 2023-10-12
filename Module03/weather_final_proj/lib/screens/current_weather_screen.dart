@@ -81,29 +81,6 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Padding(
-              //   padding: const EdgeInsets.only(
-              //     bottom: 30,
-              //   ),
-              //   child: Column(
-              //     children: [
-              //       Text(
-              //         widget.selectedCity!.name,
-              //         style: const TextStyle(
-              //           color: Colors.cyan,
-              //           fontSize: 30,
-              //           fontWeight: FontWeight.bold,
-              //         ),
-              //       ),
-              //       Text(
-              //         widget.selectedCity!.admin1,
-              //         style: const TextStyle(
-              //           fontSize: 20,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
               Column(
                 children: [
                   Text(

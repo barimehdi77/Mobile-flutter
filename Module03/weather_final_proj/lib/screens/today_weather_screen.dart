@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:weather_final_proj/models/current_weather_model.dart';
 import 'package:weather_final_proj/models/geo_coding_model.dart';
 import 'package:weather_final_proj/models/today_weather_model.dart';
+import 'package:weather_final_proj/widgets/today_weather_chart_widget.dart';
 
 class TodayWeatherScreen extends StatefulWidget {
   final GeoCodingModel? selectedCity;
@@ -25,6 +27,14 @@ class TodayWeatherScreen extends StatefulWidget {
 }
 
 class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
+  late bool isShowingMainData;
+
+  @override
+  void initState() {
+    super.initState();
+    isShowingMainData = true;
+  }
+
   Future<TodayWeatherModel?> getTodayWeatherByHours() async {
     var url =
         'https://api.open-meteo.com/v1/forecast?latitude=${widget.selectedCity!.latitude}&longitude=${widget.selectedCity!.longitude}&hourly=temperature_2m,weathercode,windspeed_10m&timezone=auto&forecast_days=1';
@@ -75,49 +85,133 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
     return FutureBuilder(
       future: getTodayWeatherByHours(),
       builder: (context, snapshot) {
+        print(
+          double.parse(
+            snapshot.data!.hourlyWeather[2].time.split('T')[1].split(':')[0],
+          ),
+        );
         if (snapshot.hasData) {
           if (snapshot.data != null) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(widget.selectedCity!.name),
-                Text(widget.selectedCity!.admin1),
-                Text(widget.selectedCity!.country),
+                Column(
+                  children: [
+                    Text(
+                      widget.selectedCity!.name,
+                      style: const TextStyle(
+                        color: Colors.cyan,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "${widget.selectedCity!.admin1}, ${widget.selectedCity!.country}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
                 Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      HourlyWeatherModel result =
-                          snapshot.data!.hourlyWeather[index];
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 50),
-                        child: ListTile(
-                          leading: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                result.time.split('T')[1],
-                                textAlign: TextAlign.center,
+                  flex: 2,
+                  child: AspectRatio(
+                    aspectRatio: 1.23,
+                    child: Stack(
+                      children: <Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            const SizedBox(
+                              height: 37,
+                            ),
+                            const Text(
+                              'Today Temperature',
+                              style: TextStyle(
+                                color: Colors.deepOrange,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 2,
                               ),
-                            ],
-                          ),
-                          title: Text(
-                            "${result.temperature} °C",
-                            textAlign: TextAlign.center,
-                          ),
-                          subtitle: Text(
-                            CurrentWeatherModel.weatherCodeDecode(
-                              result.weathercode,
-                            ).name,
-                            textAlign: TextAlign.center,
-                          ),
-                          trailing: Text(
-                            "${result.windspeed} Km/h",
-                          ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(
+                              height: 37,
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 16, left: 6),
+                                child: TodayWeatherChartWidget(
+                                  hourlyWeather: snapshot.data!.hourlyWeather,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                          ],
                         ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: snapshot.data!.hourlyWeather.map((e) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 7),
+                        padding: const EdgeInsets.all(7),
+                        width: 200,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              e.time.split('T')[1],
+                              textAlign: TextAlign.center,
+                            ),
+                            Lottie.asset(
+                              CurrentWeatherModel.weatherCodeDecode(
+                                e.weathercode,
+                              ).icon,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.fill,
+                            ),
+                            Text(
+                              "${e.temperature} °C",
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepOrange,
+                              ),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  const WidgetSpan(
+                                    child: Icon(
+                                      Icons.air,
+                                      size: 20,
+                                      color: Colors.cyan,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "${e.windspeed} Km/h",
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        // child: Text(result.temperature.toString()),
                       );
-                    },
-                    itemCount: snapshot.data!.hourlyWeather.length,
+                    }).toList(),
                   ),
                 ),
               ],
