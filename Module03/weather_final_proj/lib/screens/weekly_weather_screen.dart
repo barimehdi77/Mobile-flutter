@@ -49,7 +49,7 @@ class _WeeklyWeatherScreenState extends State<WeeklyWeatherScreen> {
             children: [
               if (widget.isPermissonsAllow)
                 const Text(
-                  'Today',
+                  'Weekly',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -80,9 +80,24 @@ class _WeeklyWeatherScreenState extends State<WeeklyWeatherScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(widget.selectedCity!.name),
-                Text(widget.selectedCity!.admin1),
-                Text(widget.selectedCity!.country),
+                Column(
+                  children: [
+                    Text(
+                      widget.selectedCity!.name,
+                      style: const TextStyle(
+                        color: Colors.cyan,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "${widget.selectedCity!.admin1}, ${widget.selectedCity!.country}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
                 Expanded(
                   child: ListView.builder(
                     itemBuilder: (context, index) {
