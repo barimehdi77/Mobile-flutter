@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class TodayWeatherModel {
   final List<HourlyWeatherModel> hourlyWeather;
 
@@ -29,9 +31,16 @@ class HourlyWeatherModel {
     List<HourlyWeatherModel> hours = [];
 
     for (var i = 0; i < 24; i++) {
+      // print(jsonHours['time'][i]);
+      // var inputDate = DateFormat();
+      var parseDate = DateTime.parse(jsonHours['time'][i]);
+      print(parseDate);
+
+      var outputFormat = DateFormat('HH:mm');
+      var outputDate = outputFormat.format(parseDate);
       hours.add(HourlyWeatherModel(
         temperature: jsonHours['temperature_2m'][i],
-        time: jsonHours['time'][i],
+        time: outputDate,
         weathercode: jsonHours['weathercode'][i],
         windspeed: jsonHours['windspeed_10m'][i],
       ));

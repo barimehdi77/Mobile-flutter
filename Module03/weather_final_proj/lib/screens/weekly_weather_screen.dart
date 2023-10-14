@@ -1,8 +1,53 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:weather_final_proj/models/current_weather_model.dart';
 import 'package:weather_final_proj/models/geo_coding_model.dart';
 import 'package:weather_final_proj/models/weekly_weather_model.dart';
+import 'package:weather_final_proj/widgets/weekly_weather_chart_widget.dart';
+
+class Indicator extends StatelessWidget {
+  const Indicator({
+    super.key,
+    required this.color,
+    required this.text,
+    required this.isSquare,
+    this.size = 16,
+    this.textColor,
+  });
+  final Color color;
+  final String text;
+  final bool isSquare;
+  final double size;
+  final Color? textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
+            color: color,
+          ),
+        ),
+        const SizedBox(
+          width: 4,
+        ),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        )
+      ],
+    );
+  }
+}
 
 class WeeklyWeatherScreen extends StatefulWidget {
   final GeoCodingModel? selectedCity;
@@ -24,7 +69,7 @@ class WeeklyWeatherScreen extends StatefulWidget {
 }
 
 class _WeeklyWeatherScreenState extends State<WeeklyWeatherScreen> {
-  Future<WeeklyWeatherModel?> getTodayWeatherByHours() async {
+  Future<WeeklyWeatherModel?> getWeeklyWeatherByDays() async {
     var url =
         'https://api.open-meteo.com/v1/forecast?latitude=${widget.selectedCity!.latitude}&longitude=${widget.selectedCity!.longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max&timezone=auto';
     final dio = Dio();
@@ -72,7 +117,7 @@ class _WeeklyWeatherScreenState extends State<WeeklyWeatherScreen> {
     }
 
     return FutureBuilder(
-      future: getTodayWeatherByHours(),
+      future: getWeeklyWeatherByDays(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data != null) {
@@ -99,50 +144,136 @@ class _WeeklyWeatherScreenState extends State<WeeklyWeatherScreen> {
                   ],
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      DailyWeatherModel result =
-                          snapshot.data!.dailyWeather[index];
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 30),
-                        child: ListTile(
-                          leading: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                result.time,
-                                textAlign: TextAlign.center,
+                  flex: 2,
+                  child: AspectRatio(
+                    aspectRatio: 1.23,
+                    child: Stack(
+                      children: <Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            const SizedBox(
+                              height: 37,
+                            ),
+                            const Text(
+                              'Week Temperature',
+                              style: TextStyle(
+                                color: Colors.deepOrange,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 2,
                               ),
-                            ],
-                          ),
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                "${result.temperatureMax} °C",
-                                textAlign: TextAlign.center,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(
+                              height: 37,
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 16, left: 6),
+                                child: WeeklyWeatherChartWidget(
+                                  dailyWeather: snapshot.data!.dailyWeather,
+                                ),
                               ),
-                              Text(
-                                "${result.temperatureMin} °C",
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                          subtitle: Text(
-                            CurrentWeatherModel.weatherCodeDecode(
-                              result.weathercode,
-                            ).name,
-                            textAlign: TextAlign.center,
-                          ),
-                          trailing: Text(
-                            "${result.windspeed} Km/h",
-                          ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Indicator(
+                                  color: Colors.red,
+                                  text: 'Max Temperature',
+                                  isSquare: false,
+                                  size: 16,
+                                  textColor: Colors.white,
+                                ),
+                                Indicator(
+                                  color: Colors.blue,
+                                  text: 'Min Temperature',
+                                  isSquare: false,
+                                  size: 16,
+                                  textColor: Colors.white,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                    itemCount: snapshot.data!.dailyWeather.length,
+                      ],
+                    ),
                   ),
                 ),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: snapshot.data!.dailyWeather.map((e) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 7),
+                        padding: const EdgeInsets.all(7),
+                        width: 200,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              e.time,
+                              textAlign: TextAlign.center,
+                            ),
+                            Lottie.asset(
+                              CurrentWeatherModel.weatherCodeDecode(
+                                e.weathercode,
+                              ).icon,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.contain,
+                            ),
+                            Text(
+                              "${e.temperatureMax} °C Max",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepOrange,
+                              ),
+                            ),
+                            Text(
+                              "${e.temperatureMin} °C Min",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  const WidgetSpan(
+                                    child: Icon(
+                                      Icons.air,
+                                      size: 20,
+                                      color: Colors.cyan,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "${e.windspeed} Km/h",
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        // child: Text(result.temperature.toString()),
+                      );
+                    }).toList(),
+                  ),
+                )
               ],
             );
           } else {

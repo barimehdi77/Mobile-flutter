@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class WeeklyWeatherModel {
   final List<DailyWeatherModel> dailyWeather;
 
@@ -30,10 +32,15 @@ class DailyWeatherModel {
     List<DailyWeatherModel> days = [];
 
     for (var i = 0; i < 7; i++) {
+      var inputDate = DateFormat('yyyy-MM-dd');
+      var parseDate = inputDate.parse(jsonDays['time'][i]);
+
+      var outputFormat = DateFormat('dd/MM');
+      var outputDate = outputFormat.format(parseDate);
       days.add(DailyWeatherModel(
         temperatureMax: jsonDays['temperature_2m_max'][i],
         temperatureMin: jsonDays['temperature_2m_min'][i],
-        time: jsonDays['time'][i],
+        time: outputDate,
         weathercode: jsonDays['weathercode'][i],
         windspeed: jsonDays['windspeed_10m_max'][i],
       ));

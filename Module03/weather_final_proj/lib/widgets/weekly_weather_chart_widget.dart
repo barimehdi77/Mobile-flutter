@@ -1,14 +1,15 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:weather_final_proj/models/today_weather_model.dart';
+import 'package:intl/intl.dart';
+import 'package:weather_final_proj/models/weekly_weather_model.dart';
 
-class TodayWeatherChartWidget extends StatelessWidget {
-  const TodayWeatherChartWidget({
+class WeeklyWeatherChartWidget extends StatelessWidget {
+  const WeeklyWeatherChartWidget({
     super.key,
-    required this.hourlyWeather,
+    required this.dailyWeather,
   });
 
-  final List<HourlyWeatherModel> hourlyWeather;
+  final List<DailyWeatherModel> dailyWeather;
 
   @override
   Widget build(BuildContext context) {
@@ -19,38 +20,38 @@ class TodayWeatherChartWidget extends StatelessWidget {
   }
 
   LineChartData get data {
-    var minTemp = hourlyWeather
+    var minTem = dailyWeather
         .reduce((prev, element) =>
-            element.temperature < prev.temperature ? element : prev)
-        .temperature
+            element.temperatureMin < prev.temperatureMin ? element : prev)
+        .temperatureMin
         .round()
         .toDouble();
     return LineChartData(
-      lineTouchData: lineTouchData,
+      lineTouchData: lineTouch,
       gridData: gridData,
-      titlesData: titlesData,
+      titlesData: titles,
       borderData: borderData,
-      lineBarsData: lineBarsData1,
+      lineBarsData: lineBarsData,
       minX: 0,
-      maxX: 23,
-      maxY: hourlyWeather
+      maxX: 6,
+      maxY: dailyWeather
           .reduce((prev, element) =>
-              element.temperature > prev.temperature ? element : prev)
-          .temperature
+              element.temperatureMax > prev.temperatureMax ? element : prev)
+          .temperatureMax
           .round()
           .toDouble(), // change this to the highest degre
-      minY: minTemp > 0 ? 0 : minTemp,
+      minY: minTem > 0 ? 0 : minTem,
     );
   }
 
-  LineTouchData get lineTouchData => LineTouchData(
+  LineTouchData get lineTouch => LineTouchData(
         handleBuiltInTouches: true,
         touchTooltipData: LineTouchTooltipData(
           tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
         ),
       );
 
-  FlTitlesData get titlesData => FlTitlesData(
+  FlTitlesData get titles => FlTitlesData(
         bottomTitles: AxisTitles(
           sideTitles: bottomTitles,
         ),
@@ -65,8 +66,9 @@ class TodayWeatherChartWidget extends StatelessWidget {
         ),
       );
 
-  List<LineChartBarData> get lineBarsData1 => [
-        lineChartBarData1_1,
+  List<LineChartBarData> get lineBarsData => [
+        lineChartMaxTemperatureData,
+        lineChartMinTemperatureData,
       ];
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
@@ -90,13 +92,7 @@ class TodayWeatherChartWidget extends StatelessWidget {
     );
     Widget text;
 
-    // String valueNumber = value.toStringAsFixed(0);
-
-    // if (value < 10) {
-    //   text = Text('0$valueNumber:00', style: style);
-    // } else {
-    // }
-    text = Text(hourlyWeather[value.toInt()].time, style: style);
+    text = Text(dailyWeather[value.toInt()].time, style: style);
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -108,7 +104,7 @@ class TodayWeatherChartWidget extends StatelessWidget {
   SideTitles get bottomTitles => SideTitles(
         showTitles: true,
         reservedSize: 20,
-        interval: 6,
+        interval: 1,
         getTitlesWidget: bottomTitleWidgets,
       );
 
@@ -124,14 +120,38 @@ class TodayWeatherChartWidget extends StatelessWidget {
         ),
       );
 
-  LineChartBarData get lineChartBarData1_1 => LineChartBarData(
-      isCurved: true,
-      color: Colors.amber,
-      barWidth: 8,
-      isStrokeCapRound: true,
-      dotData: const FlDotData(show: true),
-      belowBarData: BarAreaData(show: false),
-      spots: hourlyWeather
-          .map((e) => FlSpot(double.parse(e.time.split(':')[0]), e.temperature))
-          .toList());
+  LineChartBarData get lineChartMaxTemperatureData => LineChartBarData(
+        isCurved: true,
+        color: Colors.red,
+        barWidth: 8,
+        isStrokeCapRound: true,
+        dotData: const FlDotData(show: true),
+        belowBarData: BarAreaData(show: false),
+        spots: dailyWeather.asMap().entries.map(
+          (
+            e,
+          ) {
+            int idx = e.key;
+            DailyWeatherModel elem = e.value;
+            return FlSpot(idx.toDouble(), elem.temperatureMax);
+          },
+        ).toList(),
+      );
+  LineChartBarData get lineChartMinTemperatureData => LineChartBarData(
+        isCurved: true,
+        color: Colors.blue,
+        barWidth: 8,
+        isStrokeCapRound: true,
+        dotData: const FlDotData(show: true),
+        belowBarData: BarAreaData(show: false),
+        spots: dailyWeather.asMap().entries.map(
+          (
+            e,
+          ) {
+            int idx = e.key;
+            DailyWeatherModel elem = e.value;
+            return FlSpot(idx.toDouble(), elem.temperatureMin);
+          },
+        ).toList(),
+      );
 }

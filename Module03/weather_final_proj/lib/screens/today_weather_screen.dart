@@ -27,14 +27,6 @@ class TodayWeatherScreen extends StatefulWidget {
 }
 
 class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
-  late bool isShowingMainData;
-
-  @override
-  void initState() {
-    super.initState();
-    isShowingMainData = true;
-  }
-
   Future<TodayWeatherModel?> getTodayWeatherByHours() async {
     var url =
         'https://api.open-meteo.com/v1/forecast?latitude=${widget.selectedCity!.latitude}&longitude=${widget.selectedCity!.longitude}&hourly=temperature_2m,weathercode,windspeed_10m&timezone=auto&forecast_days=1';
@@ -85,11 +77,6 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
     return FutureBuilder(
       future: getTodayWeatherByHours(),
       builder: (context, snapshot) {
-        print(
-          double.parse(
-            snapshot.data!.hourlyWeather[2].time.split('T')[1].split(':')[0],
-          ),
-        );
         if (snapshot.hasData) {
           if (snapshot.data != null) {
             return Column(
@@ -169,7 +156,7 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              e.time.split('T')[1],
+                              e.time,
                               textAlign: TextAlign.center,
                             ),
                             Lottie.asset(
