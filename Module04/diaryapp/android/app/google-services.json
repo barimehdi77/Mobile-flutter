@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "695344756481",
+    "project_id": "dirayapp-93e86",
+    "storage_bucket": "dirayapp-93e86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695344756481:android:0a01586080c1daa09d0d00",
+        "android_client_info": {
+          "package_name": "com.example.diaryapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "695344756481-jqvvijl6j0uj29da5r0tpgv6qgrkaciq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.diaryapp",
+            "certificate_hash": "d50792f21ec659fafd407f6dc72d5455bb23929d"
+          }
+        },
+        {
+          "client_id": "695344756481-so6t7l8qnu9mp2lvmt9lerc2sl66bhb2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYzUSZr2Xghs3iHvGr2NWO4Og-gIlxuDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "695344756481-so6t7l8qnu9mp2lvmt9lerc2sl66bhb2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "695344756481-79qo6bva6nil68h3o0p4h4l04avv1q4a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.diaryapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
