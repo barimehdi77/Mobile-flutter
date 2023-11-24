@@ -20,6 +20,7 @@ class ListNotesWidget extends StatelessWidget {
     List<NotesModel> notesList = docs
         .map(
           (note) => NotesModel(
+            id: note.id,
             email: note['email'],
             feeling: note['feeling'],
             content: note['content'],

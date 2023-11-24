@@ -1,12 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaryapp/providers/notes_provider.dart';
 import 'package:diaryapp/widgets/background_painter_widget.dart';
 import 'package:diaryapp/widgets/display_profile_widget.dart';
 import 'package:diaryapp/widgets/list_container_widget.dart';
 import 'package:diaryapp/widgets/note_header_widget.dart';
 import 'package:diaryapp/widgets/notes_stream_widget.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -14,13 +13,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // CollectionReference notes = FirebaseFirestore.instance.collection('notes');
-
-    // final storageService =
-    //     Provider.of<StorageServiceProvider>(context, listen: false)
-    //         .storageService;
-    // final userModel = Provider.of<UserProvider>(context, listen: true);
-
     final selectedNote =
         Provider.of<NotesProvider>(context, listen: true).getSelectedNote;
 
@@ -104,10 +96,17 @@ class HomeScreen extends StatelessWidget {
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: () {
-                                        Provider.of<NotesProvider>(context,
-                                                listen: false)
-                                            .setSelectedNote = null;
+                                      onPressed: () async {
+                                        await FirebaseFirestore.instance
+                                            .collection('notes')
+                                            .doc(selectedNote.id)
+                                            .delete();
+
+                                        if (context.mounted) {
+                                          Provider.of<NotesProvider>(context,
+                                                  listen: false)
+                                              .setSelectedNote = null;
+                                        }
                                       },
                                       icon: const Icon(
                                         Icons.delete_forever_rounded,

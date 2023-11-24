@@ -1,4 +1,5 @@
 class NotesModel {
+  final String id;
   final String email;
   final String content;
   final String title;
@@ -6,6 +7,7 @@ class NotesModel {
   final String feeling;
 
   NotesModel({
+    required this.id,
     required this.email,
     required this.content,
     required this.title,
@@ -15,6 +17,7 @@ class NotesModel {
 
   factory NotesModel.fromJson(Map data) {
     return NotesModel(
+      id: data['id'],
       email: data['email'],
       content: data['content'],
       title: data['title'],
