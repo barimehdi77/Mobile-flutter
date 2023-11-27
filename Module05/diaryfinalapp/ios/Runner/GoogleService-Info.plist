@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>695344756481-79qo6bva6nil68h3o0p4h4l04avv1q4a.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.695344756481-79qo6bva6nil68h3o0p4h4l04avv1q4a</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>695344756481-jqvvijl6j0uj29da5r0tpgv6qgrkaciq.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDVsjPaAMQf29DMyxHibat6RWgnf3ZDLiI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>695344756481</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.diaryapp</string>
+	<key>PROJECT_ID</key>
+	<string>dirayapp-93e86</string>
+	<key>STORAGE_BUCKET</key>
+	<string>dirayapp-93e86.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:695344756481:ios:dbbdd9a4076334fe9d0d00</string>
+</dict>
+</plist>
