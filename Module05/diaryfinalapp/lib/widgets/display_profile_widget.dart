@@ -1,3 +1,4 @@
+import 'package:diaryapp/providers/notes_provider.dart';
 import 'package:diaryapp/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,8 @@ class DisplayProfileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userModel = Provider.of<UserProvider>(context);
+    final allNotes =
+        Provider.of<NotesProvider>(context, listen: true).getAllUserNotes;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,9 +39,9 @@ class DisplayProfileWidget extends StatelessWidget {
                   fontSize: 30,
                 ),
               ),
-              const Text(
-                "77 Note",
-                style: TextStyle(
+              Text(
+                "Total Notes: ${allNotes == null ? 0 : allNotes.length}",
+                style: const TextStyle(
                   color: Colors.white38,
                   fontSize: 20,
                 ),

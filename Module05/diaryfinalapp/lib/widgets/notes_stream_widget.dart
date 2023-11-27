@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diaryapp/enums/feelings_enum.dart';
+import 'package:diaryapp/providers/notes_provider.dart';
 import 'package:diaryapp/providers/storage_service_provider.dart';
 import 'package:diaryapp/providers/user_provider.dart';
 import 'package:diaryapp/widgets/create_new_note_widget.dart';
 import 'package:diaryapp/widgets/display_error_message_widget.dart';
+import 'package:diaryapp/widgets/feeling_perc_widget.dart';
 import 'package:diaryapp/widgets/list_notes_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class NotesStreamWidget extends StatefulWidget {
@@ -30,8 +34,10 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
 
     if (userModel.getUser == null) return Container();
 
-    getAllNotes =
-        notes.where("email", isEqualTo: userModel.getUser!.email).snapshots();
+    getAllNotes = notes
+        .where("email", isEqualTo: userModel.getUser!.email)
+        .orderBy('date', descending: true)
+        .snapshots();
 
     Future<void> postNewNote() async {
       await notes.add({
@@ -53,6 +59,7 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
       stream: getAllNotes,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
+          print(snapshot.error);
           return DisplayErrorMessageWidget(
             error: "An error ${snapshot.error.toString()}",
           );
@@ -64,12 +71,6 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
         }
 
         var len = snapshot.data!.docs.length;
-        if (len == 0) {
-          return const DisplayErrorMessageWidget(
-            error: "No notes available",
-          );
-        }
-
         if (isCreateNewNote) {
           return CreateNewNoteWidget(
             selectedFeeling: selectedFeeling,
@@ -91,48 +92,91 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
             onSubmit: postNewNote,
           );
         }
+        Provider.of<NotesProvider>(context, listen: false).setUserNotes =
+            snapshot.data!.docs;
+        if (len == 0) {
+          return Column(
+            children: [
+              const Expanded(
+                child: DisplayErrorMessageWidget(
+                  error: "No notes available",
+                ),
+              ),
+              pageFooter(),
+            ],
+          );
+        }
 
         return Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ListNotesWidget(
-              docs: snapshot.data!.docs,
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(7),
+                  bottomRight: Radius.circular(7),
+                ),
+              ),
+              child: const Column(
+                children: [
+                  Text(
+                    "Your last Notes are: ",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  ListNotesWidget(),
+                ],
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isCreateNewNote = true;
-                    });
-                  },
-                  icon: const Icon(
-                    Icons.add,
-                    size: 50,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Provider.of<UserProvider>(context, listen: false).setUser =
-                        null;
-                    Provider.of<StorageServiceProvider>(context, listen: false)
-                        .storageService
-                        .deleteAllSecureData();
-                    Navigator.pushReplacementNamed(context, 'login');
-                  },
-                  icon: const Icon(
-                    Icons.logout_outlined,
-                    color: Colors.red,
-                    size: 50,
-                  ),
-                ),
-              ],
-            )
+            const Expanded(child: FeelingPercWidget()),
+            pageFooter(),
           ],
         );
       },
+    );
+  }
+
+  Widget pageFooter() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              isCreateNewNote = true;
+            });
+          },
+          icon: const Icon(
+            Icons.add,
+            size: 50,
+          ),
+        ),
+        IconButton(
+          onPressed: () async {
+            Provider.of<UserProvider>(context, listen: false).setUser = null;
+            Provider.of<NotesProvider>(context, listen: false).setUserNotes =
+                null;
+            await Provider.of<StorageServiceProvider>(context, listen: false)
+                .storageService
+                .deleteAllSecureData();
+            if (context.mounted) {
+              Navigator.of(context).pushReplacementNamed('login');
+            }
+          },
+          icon: const Icon(
+            Icons.logout_outlined,
+            color: Colors.red,
+            size: 50,
+          ),
+        ),
+      ],
     );
   }
 }

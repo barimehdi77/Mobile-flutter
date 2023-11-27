@@ -95,8 +95,10 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ListNotesWidget(
-              docs: snapshot.data!.docs,
+            Expanded(
+              child: ListNotesWidget(
+                docs: snapshot.data!.docs,
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
