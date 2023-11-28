@@ -1,3 +1,4 @@
+import 'package:diaryapp/models/notes_model.dart';
 import 'package:diaryapp/providers/notes_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -7,15 +8,29 @@ import 'package:provider/provider.dart';
 class ListNotesWidget extends StatelessWidget {
   const ListNotesWidget({
     super.key,
+    this.selectedDate,
+    this.displayedItems,
   });
+
+  final String? selectedDate;
+  final int? displayedItems;
 
   @override
   Widget build(BuildContext context) {
-    final notesList = Provider.of<NotesProvider>(context).getAllUserNotes!;
+    final List<NotesModel> notesList;
+    if (selectedDate != null) {
+      print(selectedDate);
+      notesList = Provider.of<NotesProvider>(context)
+          .getAllUserNotes!
+          .where((element) => element.date.join('-') == selectedDate)
+          .toList();
+    } else {
+      notesList = Provider.of<NotesProvider>(context).getAllUserNotes!;
+    }
     return ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: 2,
+      itemCount: displayedItems ?? notesList.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
@@ -33,26 +48,16 @@ class ListNotesWidget extends StatelessWidget {
                 "assets/lotties/${notesList[index].feeling.toLowerCase()}.json",
               ),
               title: Text(
-                notesList[index].title.length > 10
-                    ? notesList[index].title.replaceRange(
-                          10,
-                          notesList[index].title.length,
-                          '...',
-                        )
-                    : notesList[index].title,
+                notesList[index].title,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
               ),
               subtitle: Text(
-                notesList[index].content.length > 15
-                    ? notesList[index].content.replaceRange(
-                          15,
-                          notesList[index].content.length,
-                          '...',
-                        )
-                    : notesList[index].content,
+                notesList[index].content,
+                overflow: TextOverflow.ellipsis,
               ),
               trailing: Column(
                 children: [

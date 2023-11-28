@@ -46,22 +46,26 @@ class NoteHeaderWidget extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: FittedBox(
-            child: Column(
-              children: [
-                Lottie.asset(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 70,
+                height: 70,
+                child: Lottie.asset(
                   "assets/lotties/${selectedNote.feeling.toLowerCase()}.json",
                 ),
-                Text(
-                  selectedNote.feeling,
-                  style: const TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(46, 86, 180, 1),
-                  ),
+              ),
+              Text(
+                selectedNote.feeling,
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(46, 86, 180, 1),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],

@@ -11,11 +11,7 @@ class FeelingPercWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final notes = Provider.of<NotesProvider>(context).getAllUserNotes;
-    if (notes == null) Container();
-    final test = (notes!.where((note) => note.feeling == "cool").length * 100) /
-        notes.length;
-    print("test: ");
-    print(test);
+    if (notes == null) return Container();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,

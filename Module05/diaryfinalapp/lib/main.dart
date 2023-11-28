@@ -1,6 +1,7 @@
 import 'package:diaryapp/providers/notes_provider.dart';
 import 'package:diaryapp/providers/storage_service_provider.dart';
 import 'package:diaryapp/providers/user_provider.dart';
+import 'package:diaryapp/screens/agenda_screen.dart';
 import 'package:diaryapp/screens/home_screen.dart';
 import 'package:diaryapp/screens/login_screen.dart';
 import 'package:diaryapp/screens/splash_screen.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
           routes: {
             'login': (context) => const LoginScreen(),
             'home': (context) => const HomeScreen(),
+            'agenda': (context) => const AgendaScreen(),
             'splash': (context) => const SplashScreen(),
           }),
     );

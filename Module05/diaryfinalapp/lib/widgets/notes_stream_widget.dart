@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:diaryapp/enums/feelings_enum.dart';
 import 'package:diaryapp/providers/notes_provider.dart';
 import 'package:diaryapp/providers/storage_service_provider.dart';
 import 'package:diaryapp/providers/user_provider.dart';
@@ -8,8 +7,8 @@ import 'package:diaryapp/widgets/display_error_message_widget.dart';
 import 'package:diaryapp/widgets/feeling_perc_widget.dart';
 import 'package:diaryapp/widgets/list_notes_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class NotesStreamWidget extends StatefulWidget {
   const NotesStreamWidget({super.key});
@@ -21,9 +20,12 @@ class NotesStreamWidget extends StatefulWidget {
 class _NotesStreamWidgetState extends State<NotesStreamWidget> {
   String? selectedFeeling;
   bool isCreateNewNote = false;
+  bool isCalendarOpen = false;
   final TextEditingController _titleEditingController = TextEditingController();
   final TextEditingController _contentEditingController =
       TextEditingController();
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +61,6 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
       stream: getAllNotes,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          print(snapshot.error);
           return DisplayErrorMessageWidget(
             error: "An error ${snapshot.error.toString()}",
           );
@@ -130,7 +131,9 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
                       color: Colors.white,
                     ),
                   ),
-                  ListNotesWidget(),
+                  ListNotesWidget(
+                    displayedItems: 2,
+                  ),
                 ],
               ),
             ),
@@ -155,6 +158,17 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
           },
           icon: const Icon(
             Icons.add,
+            size: 50,
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed('agenda');
+          },
+          icon: Icon(
+            isCalendarOpen
+                ? Icons.arrow_back_ios
+                : Icons.calendar_today_rounded,
             size: 50,
           ),
         ),
