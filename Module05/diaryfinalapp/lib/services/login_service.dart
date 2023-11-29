@@ -34,8 +34,6 @@ class LoginService {
     // Once signed in, return the UserCredential
     final userData =
         await FirebaseAuth.instance.signInWithCredential(credential);
-    print("userData");
-    print(userData.user);
     return UserModel(
       userData.user!.displayName!,
       userData.user!.email!,
@@ -52,14 +50,11 @@ class LoginService {
     );
     var result = await gitHubSignIn.signIn(context);
     if (result.status == GitHubSignInResultStatus.ok) {
-      print(result.token);
       // Create a new credential
       final credential = GithubAuthProvider.credential(result.token!);
       // Once signed in, return the UserCredential
       final userData =
           await FirebaseAuth.instance.signInWithCredential(credential);
-      print("userData");
-      print(userData.user);
       return UserModel(
         userData.user!.displayName!,
         userData.user!.email!,
@@ -109,7 +104,6 @@ class LoginService {
       if (context.mounted) {
         Navigator.of(context).pop();
       }
-      print(e);
     }
   }
 }

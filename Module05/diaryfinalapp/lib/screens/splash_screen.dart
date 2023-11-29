@@ -1,9 +1,6 @@
 import 'package:diaryapp/models/user_model.dart';
 import 'package:diaryapp/providers/storage_service_provider.dart';
 import 'package:diaryapp/providers/user_provider.dart';
-import 'package:diaryapp/screens/home_screen.dart';
-import 'package:diaryapp/screens/login_screen.dart';
-import 'package:diaryapp/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,9 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Provider.of<StorageServiceProvider>(context, listen: false)
               .storageService;
 
-      print("token: ");
       var token = await storageService.readSecureData('token');
-      print(token != null);
       if (token != null) {
         var username = await storageService.readSecureData('username');
         var email = await storageService.readSecureData('email');

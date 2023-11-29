@@ -1,7 +1,6 @@
 import 'package:diaryapp/models/notes_model.dart';
 import 'package:diaryapp/providers/notes_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +18,6 @@ class ListNotesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<NotesModel> notesList;
     if (selectedDate != null) {
-      print(selectedDate);
       notesList = Provider.of<NotesProvider>(context)
           .getAllUserNotes!
           .where((element) => element.date.join('-') == selectedDate)

@@ -1,5 +1,4 @@
 import 'package:diaryapp/enums/feelings_enum.dart';
-import 'package:diaryapp/models/notes_model.dart';
 import 'package:diaryapp/providers/notes_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';

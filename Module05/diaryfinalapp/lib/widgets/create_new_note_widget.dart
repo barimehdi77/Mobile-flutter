@@ -142,12 +142,7 @@ class CreateNewNoteWidget extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      print("Valid form");
                       _formKey.currentState!.save();
-                      print(titleEditingController.value.text);
-                      print(contentEditingController.value.text);
-                      print(selectedFeeling);
-
                       await onSubmit();
                     }
                   },
@@ -159,6 +154,5 @@ class CreateNewNoteWidget extends StatelessWidget {
         )
       ],
     );
-    ;
   }
 }

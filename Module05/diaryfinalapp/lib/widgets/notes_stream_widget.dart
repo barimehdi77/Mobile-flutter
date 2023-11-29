@@ -8,7 +8,6 @@ import 'package:diaryapp/widgets/feeling_perc_widget.dart';
 import 'package:diaryapp/widgets/list_notes_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class NotesStreamWidget extends StatefulWidget {
   const NotesStreamWidget({super.key});
@@ -24,8 +23,6 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
   final TextEditingController _titleEditingController = TextEditingController();
   final TextEditingController _contentEditingController =
       TextEditingController();
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
