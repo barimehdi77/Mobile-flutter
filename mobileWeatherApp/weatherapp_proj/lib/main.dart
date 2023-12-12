@@ -239,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (isPermissonsAllow == null)
                     Text(
                       displayGeoLocation == true
-                          ? '${_currentPosition?.latitude ?? ""} ${_currentPosition?.longitude ?? ""}'
+                          ? 'Geolocation'
                           : _searchController.text,
                     ),
                   if (isPermissonsAllow == false)
