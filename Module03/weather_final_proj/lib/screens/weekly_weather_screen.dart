@@ -213,63 +213,65 @@ class _WeeklyWeatherScreenState extends State<WeeklyWeatherScreen> {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: snapshot.data!.dailyWeather.map((e) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 7),
-                        padding: const EdgeInsets.all(7),
-                        width: 200,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              e.time,
-                              textAlign: TextAlign.center,
-                            ),
-                            Lottie.asset(
-                              CurrentWeatherModel.weatherCodeDecode(
-                                e.weathercode,
-                              ).icon,
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.contain,
-                            ),
-                            Text(
-                              "${e.temperatureMax} °C Max",
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepOrange,
+                      return FittedBox(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 7),
+                          padding: const EdgeInsets.all(7),
+                          width: 200,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                e.time,
+                                textAlign: TextAlign.center,
                               ),
-                            ),
-                            Text(
-                              "${e.temperatureMin} °C Min",
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
+                              Lottie.asset(
+                                CurrentWeatherModel.weatherCodeDecode(
+                                  e.weathercode,
+                                ).icon,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.contain,
                               ),
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  const WidgetSpan(
-                                    child: Icon(
-                                      Icons.air,
-                                      size: 20,
-                                      color: Colors.cyan,
+                              Text(
+                                "${e.temperatureMax} °C Max",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepOrange,
+                                ),
+                              ),
+                              Text(
+                                "${e.temperatureMin} °C Min",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    const WidgetSpan(
+                                      child: Icon(
+                                        Icons.air,
+                                        size: 20,
+                                        color: Colors.cyan,
+                                      ),
                                     ),
-                                  ),
-                                  TextSpan(
-                                    text: "${e.windspeed} Km/h",
-                                    style: const TextStyle(
-                                      fontSize: 20,
+                                    TextSpan(
+                                      text: "${e.windspeed} Km/h",
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                          // child: Text(result.temperature.toString()),
                         ),
-                        // child: Text(result.temperature.toString()),
                       );
                     }).toList(),
                   ),
