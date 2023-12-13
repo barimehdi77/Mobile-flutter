@@ -39,7 +39,7 @@ class TodayWeatherChartWidget extends StatelessWidget {
           .temperature
           .round()
           .toDouble(), // change this to the highest degre
-      minY: minTemp > 0 ? 0 : minTemp,
+      minY: minTemp > 0 ? 0 : minTemp - 1,
     );
   }
 
