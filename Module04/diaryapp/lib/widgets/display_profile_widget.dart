@@ -36,13 +36,6 @@ class DisplayProfileWidget extends StatelessWidget {
                   fontSize: 30,
                 ),
               ),
-              const Text(
-                "77 Note",
-                style: TextStyle(
-                  color: Colors.white38,
-                  fontSize: 20,
-                ),
-              ),
             ],
           ),
         )

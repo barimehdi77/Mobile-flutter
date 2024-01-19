@@ -1,16 +1,13 @@
-import 'package:diaryapp/providers/user_provider.dart';
 import 'package:diaryapp/services/login_service.dart';
 import 'package:diaryapp/widgets/background_painter_widget.dart';
 import 'package:diaryapp/widgets/sized_botton_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       body: Stack(
         children: [
@@ -105,24 +102,7 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Center(
-                child: Container(
-                  // height: 200,
-                  // width: MediaQuery.of(context).size.width - 40,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(46, 86, 180, 1),
-                    borderRadius: BorderRadius.circular(1000),
-                  ),
-                  child: Text(
-                    userProvider.getUser?.userName ?? "helo",
-                    style: const TextStyle(
-                      fontSize: 30,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+              const Center(),
             ],
           )
         ],
