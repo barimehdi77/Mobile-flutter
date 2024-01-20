@@ -64,11 +64,6 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
         }
 
         var len = snapshot.data!.docs.length;
-        if (len == 0) {
-          return const DisplayErrorMessageWidget(
-            error: "No notes available",
-          );
-        }
 
         if (isCreateNewNote) {
           return CreateNewNoteWidget(
@@ -96,9 +91,13 @@ class _NotesStreamWidgetState extends State<NotesStreamWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: ListNotesWidget(
-                docs: snapshot.data!.docs,
-              ),
+              child: len == 0
+                  ? const DisplayErrorMessageWidget(
+                      error: "No notes available",
+                    )
+                  : ListNotesWidget(
+                      docs: snapshot.data!.docs,
+                    ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

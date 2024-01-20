@@ -3,12 +3,13 @@ import 'package:diaryapp/providers/storage_service_provider.dart';
 import 'package:diaryapp/providers/user_provider.dart';
 import 'package:diaryapp/screens/home_screen.dart';
 import 'package:diaryapp/screens/login_screen.dart';
-import 'package:diaryapp/screens/splash_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:diaryapp/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -47,11 +48,11 @@ class MyApp extends StatelessWidget {
             ),
             useMaterial3: true,
           ),
-          home: const SplashScreen(),
+          home: const WelcomeScreen(),
           routes: {
             'login': (context) => const LoginScreen(),
             'home': (context) => const HomeScreen(),
-            'splash': (context) => const SplashScreen(),
+            'welcome': (context) => const WelcomeScreen(),
           }),
     );
   }
