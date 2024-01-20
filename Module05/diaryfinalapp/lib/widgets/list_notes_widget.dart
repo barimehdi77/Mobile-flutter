@@ -28,7 +28,7 @@ class ListNotesWidget extends StatelessWidget {
     return ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: displayedItems ?? notesList.length,
+      itemCount: notesList.length > 2 ? displayedItems : notesList.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
